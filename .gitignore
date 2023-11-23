@@ -1,6 +1,9 @@
 # CUSTOM
-credentials/
+credentials/*
 .idea/
+external-files/logs/*
+appium-scraper-deployment.yaml
+appium-scraper-service.yaml
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

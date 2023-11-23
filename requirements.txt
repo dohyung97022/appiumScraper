@@ -1,0 +1,7 @@
+PyMySQL==1.0.2
+SQLAlchemy==1.4.35
+SQLAlchemy-serializer==1.4.1
+datadog-api-client==2.13.2
+JSON-log-formatter==0.5.1
+python-dotenv==0.20.0
+tweety-ns==0.9.9.5

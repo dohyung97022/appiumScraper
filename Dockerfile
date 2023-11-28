@@ -8,6 +8,7 @@ COPY src src
 COPY main.py main.py
 COPY requirements.txt requirements.txt
 COPY /credentials/surfshark_credentials.conf /etc/openvpn/
+COPY /external-files/configurations.zip configurations.zip
 RUN mkdir external-files
 RUN mkdir external-files/logs
 # 기본 도구
@@ -26,8 +27,7 @@ RUN pip install --upgrade pip
 RUN pip install -r requirements.txt
 # openvpn 연결
 WORKDIR /etc/openvpn
-CMD wget my.surfshark.com/vpn/api/v1/server/configurations -O configurations.zip;\
-    unzip configurations.zip -d configurations;\
+CMD unzip configurations.zip -d configurations;\
     # 랜덤한 프록시 선택
     CONFIG="$(find configurations -type f | shuf -n 1)";\
     # openvpn 실행

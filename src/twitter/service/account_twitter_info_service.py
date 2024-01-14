@@ -1,6 +1,6 @@
 import datetime
 from tweety.types import User
-from src.automation.tag.service import tag_service
+from src.sql_alchemy.db_service.tag.service import tag_service
 from src.sql_alchemy.db_model.account import Account
 from src.sql_alchemy.db_model.account_tag_association import AccountTagAssociation
 from src.sql_alchemy.db_model.account_twitter_info import AccountTwitterInfo
@@ -59,7 +59,6 @@ def insert_save_account_twitter_info(account: Account, user: User):
 
 
 def insert_update_account_banned(account: Account):
-
     if account.reg_date > datetime.datetime.now() - datetime.timedelta(hours=3):
         TwitterRegisterStatisticsLogger('BANNED').info(message=f'twitter account creation banned.')
     tag_service.remove_account_tag_by_names(account, ['TWITTER_SET'])

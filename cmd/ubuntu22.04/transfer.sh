@@ -1,7 +1,7 @@
 PROJECT_NAME=appiumScraper
 
 SERVER_USERNAME=ubuntu
-SERVER_IP4=192.168.35.133 # ubuntu4
+SERVER_IP4=192.168.45.4 # ubuntu4
 SERVER_PROJECT_LOCATION=/home/ubuntu/projects
 
 compose_convert() {
@@ -9,7 +9,7 @@ compose_convert() {
 }
 
 zip_file() {
-  zip -r ${PROJECT_NAME}.zip . -x "venv/lib/*" "external-files/logs/*" ".git/*" ".idea/*"
+  zip -r ${PROJECT_NAME}.zip . -x "venv/lib/*" ".git/*" ".idea/*"
 }
 
 delete_zip_file() {
@@ -27,7 +27,7 @@ build() {
   server_ip=$1
   server_username=$2
   server_project_location=$3
-  ssh -t ${server_username}@${server_ip} "${server_project_location}/build.sh"
+  ssh -t ${server_username}@${server_ip} "sudo ${server_project_location}/build.sh"
 }
 
 run() {

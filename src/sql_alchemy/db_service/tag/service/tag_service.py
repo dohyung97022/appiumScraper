@@ -1,4 +1,4 @@
-from src.automation.account.service import user_service
+from src.sql_alchemy.db_service.account.service import account_service
 from src.sql_alchemy.db_model.account import Account
 from src.sql_alchemy.db_model.account_tag_association import AccountTagAssociation
 from src.sql_alchemy.db_model.tag import Tag
@@ -40,7 +40,7 @@ def insert_account_tags(account: Account, tags: list[Tag]):
     for tag in tags:
         account_tag_association = select_or_create_account_tag_association(account=account, tag=tag)
         account.tag_associations.append(account_tag_association)
-    user_service.update_user(account)
+    account_service.update_account(account)
 
 
 def insert_account_tag_by_names(account: Account, names: list[str]):

@@ -1,14 +1,18 @@
-from datetime import datetime
+from datetime import datetime, timedelta
 
 from sqlalchemy.sql import functions
 from tweety import Twitter
 from tweety.exceptions_ import UserProtected, UserNotFound
-from src.automation.account.service import user_service
-from src.automation.tag.service import tag_service
+
+from src.sql_alchemy.db_model.account_twitter_post import AccountTwitterPost
+from src.sql_alchemy.db_service.account.service import account_service
+from src.sql_alchemy.db_service.account_twitter_post.service import account_twitter_post_service
+from src.sql_alchemy.db_service.tag.service import tag_service
 from src.twitter.service import account_twitter_info_service
 from src.sql_alchemy.db_model.account import Account
 from src.sql_alchemy.db_model.account_twitter_info import AccountTwitterInfo
 from src.sql_alchemy.service import db_session_service
+from src.twitter.service.account_twitter_info_service import TwitterRegisterStatisticsLogger
 from src.utils.callable import callable_utils
 from src.utils.log import log_utils
 from src.utils.log.log_utils import CustomLogger
@@ -57,37 +61,59 @@ def log_twitter_info_statistics():
     ).info('twitter info statistics.')
 
 
+def insert_update_account_banned(account: Account):
+    if account.reg_date > datetime.now() - timedelta(hours=3):
+        TwitterRegisterStatisticsLogger('BANNED').info(message=f'twitter account creation banned.')
+    tag_service.remove_account_tag_by_names(account, ['TWITTER_SET'])
+    account.account_twitter_info.profile_interstitial_type = 'fake_account'
+    account_twitter_info_service.insert_update_account_twitter_info(account.account_twitter_info)
+
+
 def scrape_user(account: Account):
     try:
         app = callable_utils.retry(Twitter, session_name="session", retry=3)
         user = callable_utils.retry(app.get_user_info, username=account.account_username, retry=3)
-        # 비정상
         if user.profile_interstitial_type == 'fake_account':
             account_twitter_info_service.insert_update_account_banned(account)
             return
+        account_twitter_info_service.insert_save_account_twitter_info(account, user)
     # 비정상
     except (UserProtected, UserNotFound):
         account_twitter_info_service.insert_update_account_banned(account)
-        return
     except KeyError as e:
         if 'guest_token' in str(e):
             CustomLogger().warn(
                 message=f'scrape user failed. Rate limited. username : {account.account_username}', exception=e)
-            return
-        raise e
-    # 실패
+        else:
+            CustomLogger().error(message=f'scrape user failed. username : {account.account_username}', exception=e)
     except Exception as e:
         CustomLogger().error(message=f'scrape user failed. username : {account.account_username}', exception=e)
-        return
-    # 성공
-    account_twitter_info_service.insert_save_account_twitter_info(account, user)
+
+
+def scrape_post(post: AccountTwitterPost):
+    try:
+        app = callable_utils.retry(Twitter, session_name="session", retry=3)
+        tweet_detail = Twitter(app).tweet_detail(str(post.post_id))
+        post.apply_tweet_detail(tweet_detail)
+        post.update_date = datetime.now()
+        account_twitter_post_service.insert_update_account_twitter_post(post)
+    except Exception as e:
+        CustomLogger().error(message=f'scrape post failed. post_id : {post.post_id}', exception=e)
 
 
 def loop_scrape_users(loop_range: int):
     tag = tag_service.select_or_create_tag_by_name('TWITTER_SET')
     for i in range(loop_range):
-        account = user_service.select_user(order=AccountTwitterInfo.scrape_date, tags=[tag])
+        account = account_service.select_account(order=AccountTwitterInfo.scrape_date, tags=[tag])
         account.account_twitter_info.scrape_date = datetime.now()
         account_twitter_info_service.insert_update_account_twitter_info(account.account_twitter_info)
         scrape_user(account)
     log_twitter_info_statistics()
+
+
+def loop_scrape_posts(loop_range: int):
+    for i in range(loop_range):
+        post = account_twitter_post_service.select_account_twitter_post(order=AccountTwitterPost.scrape_date)
+        post.scrape_date = datetime.now()
+        account_twitter_post_service.insert_update_account_twitter_post(post)
+        scrape_post(post)

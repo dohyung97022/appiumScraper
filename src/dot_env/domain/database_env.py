@@ -5,7 +5,7 @@ from dotenv import load_dotenv
 
 
 # env 로드
-load_dotenv(dotenv_path=os.path.join(getcwd(), Path('src/dot_env/env/database.env')))
+load_dotenv(dotenv_path=os.path.join(getcwd(), Path('external-files/env/database.env')))
 
 
 # env 에서 받아온 db 정보

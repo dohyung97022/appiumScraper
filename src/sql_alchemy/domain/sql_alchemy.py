@@ -14,10 +14,10 @@ engine = create_engine(
     f'@{DatabaseEnv.endpoint}'
     f':{DatabaseEnv.port}'
     f'/{DatabaseEnv.schema}'
-    f'?charset=utf8',
+    f'?charset=utf8mb4',
     echo=False,
     pool_pre_ping=True,
-    isolation_level="READ COMMITTED"
+    isolation_level="READ COMMITTED",
     )
 
 # db 베이스

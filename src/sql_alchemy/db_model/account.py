@@ -4,6 +4,7 @@ from sqlalchemy.orm import relationship
 
 from src.sql_alchemy.db_model.account_tag_association import AccountTagAssociation
 from src.sql_alchemy.db_model.account_twitter_info import AccountTwitterInfo
+from src.sql_alchemy.db_model.account_twitter_post import AccountTwitterPost
 from src.sql_alchemy.db_model.profile import Profile
 from src.sql_alchemy.domain.custom_serializer_mixin import CustomSerializerMixin
 from src.sql_alchemy.domain.sql_alchemy import Base
@@ -27,6 +28,8 @@ class Account(Base, CustomSerializerMixin):
         'AccountTagAssociation', lazy='joined', foreign_keys='AccountTagAssociation.account_seq')
     account_twitter_info: AccountTwitterInfo = relationship(
         'AccountTwitterInfo', back_populates="account", lazy="joined", uselist=False)
+    account_twitter_post: AccountTwitterPost = relationship(
+        'AccountTwitterPost', back_populates="account", lazy="noload", uselist=True)
 
     def __init__(self,
                  account_seq: int = None,

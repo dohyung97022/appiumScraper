@@ -14,3 +14,17 @@ services:
         image: appium-scraper
         labels:
             kompose.image-pull-policy: Never
+    appium-scraper-2:
+        ports:
+            - 80
+        dns:
+            - 8.8.8.8
+        cap_add:
+            - NET_ADMIN
+        devices:
+            - /dev/net/tun:/dev/net/tun
+        stdin_open: true
+        tty: true
+        image: appium-scraper
+        labels:
+            kompose.image-pull-policy: Never

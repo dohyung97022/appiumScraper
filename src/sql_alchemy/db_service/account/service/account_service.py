@@ -2,13 +2,12 @@ from sqlalchemy import text
 
 from src.sql_alchemy.db_model.account import Account
 from src.sql_alchemy.db_model.account_tag_association import AccountTagAssociation
-from src.sql_alchemy.db_model.account_twitter_info import AccountTwitterInfo
 from src.sql_alchemy.db_model.tag import Tag
 from src.sql_alchemy.service import db_session_service
 
 
 # 계정 저장
-def insert_user(user: Account):
+def insert_account(user: Account):
     session = db_session_service.get_session()
     session.add(user)
     session.commit()
@@ -16,11 +15,11 @@ def insert_user(user: Account):
 
 
 # 계정 선택
-def select_user_by_seq(seq: int) -> Account:
+def select_account_by_seq(seq: int) -> Account:
     return db_session_service.get_session().query(Account).get(seq)
 
 
-def select_user(seq: int = None, where: str = None, email: str = None, site: str = None, tags: list[Tag] = None, order=None) -> Account:
+def select_account(seq: int = None, where: str = None, email: str = None, site: str = None, tags: list[Tag] = None, order=None) -> Account:
     session = db_session_service.get_session()
     query = session.query(Account)
     if where:
@@ -42,7 +41,7 @@ def select_user(seq: int = None, where: str = None, email: str = None, site: str
     return query.first()
 
 
-def select_users(where: str = None, email: str = None, site: str = None, tags: list[Tag] = None, order=None) -> list[Account]:
+def select_accounts(where: str = None, email: str = None, site: str = None, tags: list[Tag] = None, order=None) -> list[Account]:
     session = db_session_service.get_session()
     query = session.query(Account)
     if where:
@@ -59,7 +58,7 @@ def select_users(where: str = None, email: str = None, site: str = None, tags: l
     return query.all()
 
 
-def update_user(account: Account):
+def update_account(account: Account):
     session = db_session_service.get_session()
     session.merge(account)
     session.commit()

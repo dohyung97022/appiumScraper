@@ -4,7 +4,7 @@ from pathlib import Path
 from dotenv import load_dotenv
 
 # env 로드
-load_dotenv(dotenv_path=os.path.join(os.getcwd(), Path('src/dot_env/env/datadog.env')))
+load_dotenv(dotenv_path=os.path.join(os.getcwd(), Path('external-files/env/datadog.env')))
 
 
 # env 에서 받아온 db 정보

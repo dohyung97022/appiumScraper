@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from src.automation.account.common.faker_sex import FakerSex
+from src.sql_alchemy.db_service.account.common.faker_sex import FakerSex
 
 
 class FakerProfile:

@@ -1,7 +1,7 @@
 # CUSTOM
 credentials/*
 .idea/
-external-files/logs/*
+external-files/
 appium-scraper-deployment.yaml
 appium-scraper-service.yaml
 

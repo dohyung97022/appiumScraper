@@ -53,4 +53,4 @@ class AccountTwitterInfo(Base, CustomSerializerMixin):
         self.followers_count = user.followers_count
         self.friends_count = user.friends_count
         self.profile_interstitial_type = user.profile_interstitial_type
-        self.is_default_profile_image = user.get('original_user').get('default_profile_image')
+        self.is_default_profile_image = user._original_user.get('default_profile_image')

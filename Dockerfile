@@ -7,10 +7,13 @@ WORKDIR /etc/openvpn
 COPY src src
 COPY main.py main.py
 COPY requirements.txt requirements.txt
-COPY /credentials/surfshark_credentials.conf /etc/openvpn/
-COPY /external-files/configurations.zip configurations.zip
-RUN mkdir external-files
-RUN mkdir external-files/logs
+COPY ./credentials ./credentials
+COPY ./external-files ./external-files
+COPY retry.sh retry.sh
+RUN mkdir ./external-files/configurations
+RUN mkdir -p /dev/net && \
+    mknod /dev/net/tun c 10 200 && \
+    chmod 600 /dev/net/tun
 # 기본 도구
 RUN apk --no-cache update
 RUN apk --no-cache add zip
@@ -27,13 +30,5 @@ RUN pip install --upgrade pip
 RUN pip install -r requirements.txt
 # openvpn 연결
 WORKDIR /etc/openvpn
-CMD unzip configurations.zip -d configurations;\
-    # 랜덤한 프록시 선택
-    CONFIG="$(find configurations -type f | shuf -n 1)";\
-    # openvpn 실행
-    openvpn --config ${CONFIG} --auth-user-pass surfshark_credentials.conf --daemon;\
-    # 인터넷 연결 대기
-    sleep 15;\
-    curl icanhazip.com;\
-    # 시작
-    python main.py;\
+CMD unzip -o ./external-files/configurations.zip -d ./external-files/configurations;\
+    ./retry.sh;\
